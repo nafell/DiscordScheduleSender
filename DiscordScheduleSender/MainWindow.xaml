@@ -1,0 +1,176 @@
+﻿<Window x:Class="DiscordScheduleSender.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DiscordScheduleSender"
+        xmlns:vm="clr-namespace:DiscordScheduleSender.ViewModels"
+        xmlns:converters="clr-namespace:DiscordScheduleSender.VIews.Converters"
+        d:DataContext="vm:MainViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="460" Width="805">
+    <Window.Resources>
+        <converters:DateOnlyConverter x:Key="DateConverter" />
+        <converters:TimeOnlyConverter x:Key="TimeConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140*" />
+            <ColumnDefinition Width="100*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5">
+            <StackPanel Orientation="Horizontal" Height="30">
+                <Button Content="今週" Width="60" Margin="3,0" />
+                <Button Content="◀" Width="35" Margin="3,0" Command="{Binding LastWeekCommand}"/>
+                <Button Content="▶" Width="35" Margin="3,0" Command="{Binding NextWeekCommand}" />
+                <ComboBox Width="140" Margin="3,0" SelectedItem="{Binding CurrentWeekSchedule}" ItemsSource="{Binding WeekSchedules}" />
+                <Button Content="Load" Width="60" Margin="3,0" Command="{Binding LoadScheduleCommand}" />
+            </StackPanel>
+            <ListBox ItemsSource="{Binding CurrentWeekSchedule.Appointments}" Margin="0, 10" BorderThickness="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="7">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsScheduled}" Value="true">
+                                            <Setter Property="Background" Value="#44FF0056" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding IsScheduled}" Value="false">
+                                            <Setter Property="Background" Value="#17000000" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            
+                            <Grid Height="40" Margin="10,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <DockPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <CheckBox IsChecked="{Binding IsScheduled}" 
+                                              Content="{Binding Date, Converter={StaticResource DateConverter}}"
+                                              DockPanel.Dock="Left" VerticalAlignment="Center" Height="40" VerticalContentAlignment="Center" />
+                                    <!--<ToggleButton IsChecked="{Binding IsScheduled}"
+                                                  Content="{Binding Date, Converter={StaticResource DateConvereter}}"
+                                                  DockPanel.Dock="Left" Height="40" Width="55" FontSize="14" >
+                                        <ToggleButton.Style>
+                                            <Style TargetType="ToggleButton">
+                                            
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter Property="Background" Value="#00000000" />
+                                                    </Trigger>
+                                                    <DataTrigger Binding="{Binding IsScheduled}" Value="true">
+                                                        <Setter Property="FontStyle" Value="Italic" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ToggleButton.Style>
+                                    </ToggleButton>-->
+                                    <CheckBox Visibility="Collapsed" IsChecked="{Binding ParentNotification, Mode=OneWay}" DockPanel.Dock="Left" >
+                                        
+                                    </CheckBox>
+                                    <!--<TextBlock Text="{Binding Date, Converter={StaticResource DateConvereter}}" Margin="0,0,5,0" TextAlignment="Right" DockPanel.Dock="Right" />-->
+                                </DockPanel>
+                                <Grid Grid.Column="1" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="190" />
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="50" />
+                                    </Grid.ColumnDefinitions>
+                                    <!--time picker-->
+                                    <TextBox Grid.Column="0" Text="{Binding Objective, UpdateSourceTrigger=PropertyChanged}" FontSize="16" Background="#00000000">
+                                        <!--<TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsScheduled}" Value="true">
+                                                    <Setter Property="Foreground" Value="#ffffff" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>-->
+                                    </TextBox>
+                                    <TextBox Grid.Column="1" Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" FontSize="16" Background="#00000000">
+                                        <!--<TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsScheduled}" Value="true">
+                                                    <Setter Property="Foreground" Value="#ffffff" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>-->
+                                    </TextBox>
+                                    <TextBox Grid.Column="2" Text="{Binding StartTime, Converter={StaticResource TimeConverter}, UpdateSourceTrigger=PropertyChanged}" FontSize="16" Background="#00000000">
+                                        <!--<TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsScheduled}" Value="true">
+                                                    <Setter Property="Foreground" Value="#ffffff" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>-->
+                                    </TextBox>
+                                    <CheckBox Grid.Column="3" IsChecked="{Binding IsCanceled}"  VerticalAlignment="Center"  VerticalContentAlignment="Center">
+                                        
+                                    </CheckBox>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border Background="{TemplateBinding Background}" Margin="0,0,0,5">
+                                        <ContentPresenter />
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True" >
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </StackPanel>
+
+        <Button Width="200" Height="50" Content="{Binding IsPosted, FallbackValue=送信}" Margin="0,10" VerticalAlignment="Bottom" Command="{Binding SendMessageCommand}"></Button>
+        
+        <Grid Grid.Column="1" Background="#2A2D31">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="72" />
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--<Button Command="{Binding CopyMessageAsync}" Content="Copy" VerticalAlignment="Bottom" Height="20"></Button>-->
+
+            <Border Grid.Column="0" CornerRadius="20" Width="40" Height="40" Margin="0,20" Background="White" VerticalAlignment="Top" />
+            <StackPanel Grid.Column="1">
+                <StackPanel   Margin="0,18,0,0" Orientation="Horizontal">
+                    <TextBlock Text="{Binding BotDisplayName, FallbackValue=BotName}" FontSize="16" Foreground="#FF0056" />
+                    <TextBlock Text="{Binding PostDate, FallbackValue=1970/01/01}" Margin="8,0,0,3" FontSize="11" Foreground="#949BA4" VerticalAlignment="Bottom" />
+                </StackPanel>
+
+                <TextBlock Text="{Binding CurrentWeekSchedule.DiscordMessageText, Mode=OneWay}"
+                       Foreground="#DADEE1"
+                       FontSize="16" />
+            </StackPanel>
+
+        </Grid>
+
+        <!--<StackPanel Orientation="Vertical">
+            
+        </StackPanel>-->
+    </Grid>
+</Window>
